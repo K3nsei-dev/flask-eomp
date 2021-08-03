@@ -1,8 +1,9 @@
 import sqlite3
 import hmac
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_jwt import JWT, jwt_required, current_identity
 from flask_cors import CORS
+import re
 
 
 class User(object):
@@ -10,6 +11,15 @@ class User(object):
         self.id = id
         self.email = email
         self.password = password
+
+
+class Products(object):
+    def __init__(self, product_name, product_type, product_price, product_description, product_image):
+        self.product_name = product_name
+        self.product_type = product_type
+        self.product_price = product_price
+        self.product_description = product_description
+        self.product_image = product_image
 
 
 def create_users():
@@ -115,6 +125,29 @@ def protected():
 def register():
     response = {}
 
+    email = request.form['email']
+    # regular expression for validating email
+    regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+
+    if re.search(regex, email):
+        pass
+    else:
+        raise Exception("Invalid Email Address, Please Try Again!")
+
+    try:
+        name = str(request.form['first_name'])
+        surname = str(request.form['last_name'])
+        number = int(request.form['cell_num'])
+
+        if type(name) == int or surname == int:
+            raise TypeError("Use Characters Only For Your Name Please")
+        elif type(number) == str:
+            raise TypeError("Use Digits Only For Your Cell Number Please")
+        else:
+            pass
+    except ValueError:
+        raise TypeError("Please Use The Correct Value For Each Section")
+
     if request.method == "POST":
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -138,23 +171,85 @@ def register():
 
 
 @app.route('/user-profile/<int:user_id>')
-@jwt_required
 def user_profile(user_id):
     response = {}
 
     with sqlite3.connect('products.db') as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user WHERE user_id = ?" + str(user_id))
+        cursor.execute("SELECT * FROM user WHERE user_id =" + str(user_id))
         users = cursor.fetchone()
 
-        new_data = []
-
-        for data in users:
-            new_data.append(User(data[0], data[1], data[2]))
-
+        response['data'] = users
         response['status_code'] = 200
         response['message'] = "Successfully Viewed Profile"
     return response
+
+
+@app.route('/update-products/<int:product_id>', methods=['PUT'])
+# @jwt_required()
+def update_profile(product_id):
+    response = {}
+
+    if request.method == "PUT":
+        with sqlite3.connect('products.db') as conn:
+            incoming_data = dict(request.json)
+            put_data = {}
+            print(incoming_data)
+            # print(put_data)
+
+            if incoming_data.get('product_name') is not None:
+                put_data['product_name'] = incoming_data.get('product_name')
+                print(put_data)
+                with sqlite3.connect('products.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE products SET product_name = ? WHERE product_id = ?",
+                                   (put_data['product_name'], product_id))
+                    conn.commit()
+
+                    response['message'] = "Updated Product Name"
+                    response['status_code'] = 200
+
+                # return response
+
+            if incoming_data.get('product_type') is not None:
+                put_data['product_type'] = incoming_data.get('product_type')
+                with sqlite3.connect('products.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE products SET product_type = ? WHERE product_id = ?",
+                                   (put_data['product_type'], product_id))
+                    conn.commit()
+
+                    response['message'] = "Updated Product Type"
+                    response['status_code'] = 200
+
+                # return response
+
+            if incoming_data.get('product_price') is not None:
+                put_data['product_price'] = incoming_data.get('product_price')
+                print(put_data)
+                with sqlite3.connect('products.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE products SET product_price = ? WHERE product_id = ?",
+                                   (put_data['product_price'], product_id))
+                    conn.commit()
+
+                    response['message'] = "Updated Product Price"
+                    response['status_code'] = 200
+
+                # return response
+
+            if incoming_data.get('product_description') is not None:
+                put_data['product_description'] = incoming_data.get('product_description')
+                with sqlite3.connect('products.db') as conn:
+                    cursor = conn.cursor()
+                    cursor.execute("UPDATE products SET product_description = ? WHERE product_id = ?",
+                                   (put_data['product_description'], product_id))
+                    conn.commit()
+
+                    response['message'] = "Updated Product Description"
+                    response['status_code'] = 200
+
+            return response
 
 
 @app.route('/add-products', methods=["POST"])
@@ -172,7 +267,8 @@ def add_products():
             cursor.execute("INSERT INTO products (product_name, "
                            "product_type, "
                            "product_price,"
-                           "product_description) VALUES (?, ?, ?, ?)", (product_name, product_type, product_price, product_description))
+                           "product_description) VALUES (?, ?, ?, ?)",
+                           (product_name, product_type, product_price, product_description))
             conn.commit()
 
             response['status_code'] = 200
