@@ -5,11 +5,12 @@ from flask_jwt import JWT, jwt_required, current_identity
 from flask_cors import CORS
 from flask_mail import Mail, Message
 import re
+from datetime import *
 
 
 # user class
 class User(object):
-    def __init__(self, id, email, password):
+    def __init__(self, id, email, password):  # initialising constructor function
         self.id = id
         self.email = email
         self.password = password
@@ -27,7 +28,7 @@ class Products(object):
 
 # update project class
 class UpdateProducts(object):
-    def __init__(self):
+    def __init__(self):  # initialisation of constructor function
         self.conn = sqlite3.connect('products.db')
         self.cursor = self.conn.cursor()
 
@@ -44,11 +45,11 @@ class UpdateProducts(object):
         query = "DELETE FROM products WHERE product_id='" + value + "'"
         self.cursor.execute(query, value)
 
-    def get_products(self): # get the products from the database
+    def get_products(self):  # get the products from the database
         self.cursor.execute("SELECT * FROM products")
         return self.cursor.fetchall()
 
-    def commit(self):  # commiting to the database
+    def commit(self):  # committing to the database
         self.conn.commit()
 
 
@@ -61,28 +62,15 @@ def create_users():
     conn = sqlite3.connect('products.db')  # connecting to the database
     print("Database Created Successfully")
 
-    conn.execute("CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY AUTOINCREMENT,"  # sqlite syntax to create a table called users
-                 "first_name TEXT NOT NULL,"
-                 "last_name TEXT NOT NULL,"
-                 "email TEXT NOT NULL,"
-                 "cell_num INTEGER NOT NULL,"
-                 "password TEXT NOT NULL)")
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS user (user_id INTEGER PRIMARY KEY AUTOINCREMENT,"  # sqlite syntax to create a table called users
+        "first_name TEXT NOT NULL,"
+        "last_name TEXT NOT NULL,"
+        "email TEXT NOT NULL,"
+        "cell_num INTEGER NOT NULL,"
+        "password TEXT NOT NULL)")
     print("User Table Created Successfully")
     conn.close()  # closing the connection
-
-
-# function to create bank table
-def create_bank():
-    conn = sqlite3.connect('products.db')
-
-    conn.execute("CREATE TABLE IF NOT EXISTS banks (bank_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                 "acc_holder TEXT NOT NULL,"
-                 "acc_num INTEGER NOT NULL,"
-                 "branch_code INTEGER NOT NULL,"
-                 "bank_ref TEXT NOT NULL,"
-                 "FOREIGN KEY (bank_id) REFERENCES user (user_id))")
-    print("Bank Table Created Successfully")
-    conn.close()
 
 
 # function to create products table
@@ -99,23 +87,9 @@ def create_products():
     conn.close()
 
 
-# function to create login table
-def create_login():
-    conn = sqlite3.connect('products.db')
-
-    conn.execute("CREATE TABLE IF NOT EXISTS login (log_id INTEGER PRIMARY KEY AUTOINCREMENT," 
-                 "email TEXT NOT NULL,"
-                 "password TEXT NOT NULL,"
-                 "date_created TEXT NOT NULL)")
-    print("Login Table Created Successfully")
-    conn.close()
-
-
 # calling the functions
 create_users()
-create_bank()
 create_products()
-create_login()
 
 
 # function to collect all the information from the users table
@@ -133,8 +107,10 @@ def fetch_users():
     return new_data
 
 
+# calling the users function
 users = fetch_users()
 
+# looping through data to get peoples emails and passwords for logging in
 username_table = {u.email: u for u in users}
 user_id_table = {u.id: u for u in users}
 
@@ -142,7 +118,7 @@ user_id_table = {u.id: u for u in users}
 # function to authenticate login
 def authenticate(email, password):
     user = username_table.get(email, None)
-    if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):
+    if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):  # comparing the entered password and adding security
         return user
 
 
@@ -163,6 +139,8 @@ app.config['MAIL_USERNAME'] = 'lca.pointofsale@gmail.com'
 app.config['MAIL_PASSWORD'] = 'lifechoices2021'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+# date time variable
+now = datetime.now()
 
 jwt = JWT(app, authenticate, identity)
 
@@ -199,6 +177,8 @@ def register():
 
         if len(name) == 0 or len(surname) == 0 or len(new_num) == 0 or len(e_add) == 0 or len(passwd) == 0:
             raise Exception("Please Fill In Each Section Correctly")
+        elif len(new_num) < 10:
+            raise Exception("Please Enter A 10 Digit Cell Number")
         elif type(name) == int or surname == int:
             raise TypeError("Use Characters Only For Your Name Please")
         elif type(number) == str:
@@ -206,7 +186,7 @@ def register():
         else:
             pass
     except ValueError:
-        raise TypeError("Please Use The Correct Value For Each Section")
+        raise TypeError("Please Use The Correct Values For Each Section")
 
     # inserting data into the users table
     if request.method == "POST":
@@ -246,7 +226,7 @@ def register():
 
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
-# @jwt_required() # used as a security with token authorization
+# @jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
     response = {}
@@ -262,53 +242,35 @@ def user_profile(user_id):
     return response
 
 
-# route for individual to upload their banking details
-@app.route('/banking-details', methods=['POST'])
-# @jwt_required
-# function that captures individuals banking details
-def banking_details():
+# route for adding products
+@app.route('/add-products', methods=["POST"])
+@jwt_required()
+# function to add products
+def add_products():
+    add_db = UpdateProducts()
     response = {}
 
-    try:
-        holder = str(request.form['acc_holder'])
-        number = int(request.form['acc_num'])
-        branch = int(request.form['branch'])
-        new_num = request.form['acc_num']
-        new_branch = request.form['branch']
-        bank = str(request.form['bank'])
+    if request.method == "POST":
+        product_name = request.form['product_name']
+        product_type = request.form['product_type']
+        product_price = request.form['product_price']
+        product_description = request.form["product_description"]
+        product_image = request.form['product_image']
 
-        if len(holder) == 0 or len(bank) == 0 or len(new_num) == 0 or len(new_branch) == 0:
-            raise Exception("Please Fill In Each Section Correctly")
-        elif type(holder) == int or type(bank) == int:
-            raise TypeError("Please Use Characters For Account Holder and Bank")
-        elif type(number) == str or type(branch) == str:
-            raise TypeError("Please Use Digits For Account and Branch Number")
-    except ValueError:
-        raise Exception("Please Use The Correct Values For Each Section")
+        values = (product_name, product_type, product_price, product_description, product_image)
 
-    if request.method == 'POST':
-        acc_holder = request.form['acc_holder']
-        acc_num = request.form['acc_num']
-        branch = request.form['branch']
-        bank = request.form['bank']
+        add_db.add_product(values)
+        add_db.commit()
 
-        with sqlite3.connect('products.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO banks (acc_holder, "
-                           "acc_num,"
-                           "branch,"
-                           "bank) VALUES (?, ?, ?, ?)", (acc_holder, acc_num, branch, bank))
-            conn.commit()
-
-            response['message'] = "Banking Details Successfully Added"
-            response['status_code'] = 200
+        response['status_code'] = 200
+        response['message'] = "Product Added Successfully"
 
         return response
 
 
 # route to update your products
 @app.route('/update-products/<int:product_id>', methods=['PUT'])
-# @jwt_required()
+@jwt_required()
 # function to update products
 def update_product(product_id):
     response = {}
@@ -351,35 +313,8 @@ def update_product(product_id):
     return response
 
 
-# route for adding products
-@app.route('/add-products', methods=["POST"])
-# @jwt_required()
-# function to add products
-def add_products():
-    add_db = UpdateProducts()
-    response = {}
-
-    if request.method == "POST":
-        product_name = request.form['product_name']
-        product_type = request.form['product_type']
-        product_price = request.form['product_price']
-        product_description = request.form["product_description"]
-        product_image = request.form['product_image']
-
-        values = (product_name, product_type, product_price, product_description, product_image)
-
-        add_db.add_product(values)
-        add_db.commit()
-
-        response['status_code'] = 200
-        response['message'] = "Product Added Successfully"
-
-        return response
-
-
 # route to view the products
-@app.route('/view-products/')
-# @jwt_required
+@app.route('/view-products')
 # function to view products
 def view_products():
     response = {}
@@ -396,7 +331,7 @@ def view_products():
 
 # route to delete product
 @app.route('/delete-product/<int:product_id>')
-# @jwt_required
+@jwt_required
 # function to delete the product
 def delete_product(product_id):
     response = {}
