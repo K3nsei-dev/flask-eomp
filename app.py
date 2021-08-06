@@ -42,8 +42,9 @@ class UpdateProducts(object):
         self.cursor.execute(update_query, value)
 
     def delete_product(self, value):  # delete a product in the database
-        query = "DELETE FROM products WHERE product_id='" + value + "'"
-        self.cursor.execute(query, value)
+        productid = str(value)
+        query = "DELETE FROM products WHERE product_id='" + productid + "'"
+        self.cursor.execute(query)
 
     def get_products(self):  # get the products from the database
         self.cursor.execute("SELECT * FROM products")
@@ -331,7 +332,7 @@ def view_products():
 
 # route to delete product
 @app.route('/delete-product/<int:product_id>')
-@jwt_required
+@jwt_required()
 # function to delete the product
 def delete_product(product_id):
     response = {}
