@@ -1,3 +1,4 @@
+# imported modules that are used in this project
 import sqlite3
 import hmac
 from flask import Flask, request
@@ -18,7 +19,7 @@ class User(object):
 
 # products class
 class Products(object):
-    def __init__(self, product_name, product_type, product_price, product_description, product_image):
+    def __init__(self, product_name, product_type, product_price, product_description, product_image):  # initialisation of constructor function
         self.product_name = product_name
         self.product_type = product_type
         self.product_price = product_price
@@ -70,22 +71,22 @@ def create_users():
         "email TEXT NOT NULL,"
         "cell_num INTEGER NOT NULL,"
         "password TEXT NOT NULL)")
-    print("User Table Created Successfully")
+    print("User Table Created Successfully")  # printing to the console
     conn.close()  # closing the connection
 
 
 # function to create products table
 def create_products():
-    conn = sqlite3.connect('products.db')
+    conn = sqlite3.connect('products.db') # connecting to the database
 
-    conn.execute("CREATE TABLE IF NOT EXISTS products (product_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+    conn.execute("CREATE TABLE IF NOT EXISTS products (product_id INTEGER PRIMARY KEY AUTOINCREMENT,"  # sqlite syntax for creating a table called products
                  "product_name TEXT NOT NULL,"
                  "product_type TEXT NOT NULL,"
                  "product_price INTEGER NOT NULL,"
                  "product_description TEXT NOT NULL,"
                  "product_image TEXT NOT NULL)")
-    print("Products Table Created Successfully")
-    conn.close()
+    print("Products Table Created Successfully")  # printing to the console
+    conn.close()  # closing the connection
 
 
 # calling the functions
@@ -95,7 +96,7 @@ create_products()
 
 # function to collect all the information from the users table
 def fetch_users():
-    with sqlite3.connect('products.db') as conn:
+    with sqlite3.connect('products.db') as conn:  # connecting to the database
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM user")  # selecting all the data from the users table
         users = cursor.fetchall()  # fetching all the data
@@ -157,9 +158,9 @@ def protected():
 def register():
     response = {}  # an empty dictionary
 
-    regex_email = request.form.get('email')
-    # regular expression for validating email
-    regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+    regex_email = request.form.get('email')  # getting the email from the form
+
+    regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'  # regular expression for validating email
 
     # verifying email address
     if re.search(regex, regex_email):
@@ -200,7 +201,7 @@ def register():
         # connecting to the database
         with sqlite3.connect('products.db') as conn:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO user (first_name,"
+            cursor.execute("INSERT INTO user (first_name,"  # sqlite syntax for inserting into the users table
                            "last_name,"
                            "email,"
                            "cell_num,"
@@ -227,17 +228,17 @@ def register():
 
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
-# @jwt_required()  # used as a security with token authorization
+@jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
     response = {}
 
-    with sqlite3.connect('products.db') as conn:
+    with sqlite3.connect('products.db') as conn:  # connecting to the database
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user WHERE user_id =" + str(user_id))
-        users = cursor.fetchone()
+        cursor.execute("SELECT * FROM user WHERE user_id =" + str(user_id))  # selecting all the data where the id matches
+        users = cursor.fetchone()  # fetching one user from the database
 
-        response['data'] = users
+        response['data'] = users  # displaying the users data in json format
         response['status_code'] = 200
         response['message'] = "Successfully Viewed Profile"
     return response
@@ -248,20 +249,20 @@ def user_profile(user_id):
 @jwt_required()
 # function to add products
 def add_products():
-    add_db = UpdateProducts()
+    add_db = UpdateProducts()  # calling the class
     response = {}
 
-    if request.method == "POST":
+    if request.method == "POST":  # inserting data into the database
         product_name = request.form['product_name']
         product_type = request.form['product_type']
         product_price = request.form['product_price']
         product_description = request.form["product_description"]
         product_image = request.form['product_image']
 
-        values = (product_name, product_type, product_price, product_description, product_image)
+        values = (product_name, product_type, product_price, product_description, product_image)  # values of what must go in the database
 
         add_db.add_product(values)
-        add_db.commit()
+        add_db.commit()  # committing it to the database
 
         response['status_code'] = 200
         response['message'] = "Product Added Successfully"
@@ -276,7 +277,7 @@ def add_products():
 def update_product(product_id):
     response = {}
 
-    try:
+    try:  # error trapping/handling
         name = str(request.form['product_name'])
         p_type = str(request.form['product_type'])
         price = int(request.form['product_price'])
@@ -293,20 +294,20 @@ def update_product(product_id):
     except ValueError:
         raise ValueError("Incorrect Value Used For Sections")
 
-    up_db = UpdateProducts()
+    up_db = UpdateProducts()  # calling the class
 
-    if request.method == "PUT":
+    if request.method == "PUT":  # inserting data into the database
         product_name = request.form['product_name']
         product_type = request.form['product_type']
         product_price = request.form['product_price']
         product_description = request.form['product_description']
         product_image = request.form['product_image']
 
-        values = (product_name, product_type, product_price, product_description, product_image)
+        values = (product_name, product_type, product_price, product_description, product_image)  # values of what must go into the database
 
         up_db.update_product(values, product_id)
 
-        up_db.commit()
+        up_db.commit()  # committing the data to the database
 
     response['message'] = "Updated Products"
     response['status_code'] = 200
@@ -320,9 +321,9 @@ def update_product(product_id):
 def view_products():
     response = {}
 
-    view_db = UpdateProducts()
+    view_db = UpdateProducts()  # calling the class
 
-    data = view_db.get_products()
+    data = view_db.get_products()  # getting the data from the class function
 
     response['status_code'] = 200
     response['data'] = data
@@ -337,11 +338,11 @@ def view_products():
 def delete_product(product_id):
     response = {}
 
-    del_db = UpdateProducts()
+    del_db = UpdateProducts()  # calling the class
 
-    del_db.delete_product(product_id)
+    del_db.delete_product(product_id)  # selecting which data to be deleted based off of the class function
 
-    del_db.commit()
+    del_db.commit()  # committing the changes to the database
 
     response['status_code'] = 200
     response['message'] = "Product Deleted Successfully"
