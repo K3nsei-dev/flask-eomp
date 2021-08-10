@@ -148,7 +148,7 @@ jwt = JWT(app, authenticate, identity)
 
 
 @app.route('/protected')
-@jwt_required()
+# @jwt_required()
 def protected():
     return '%s' % current_identity
 
@@ -228,7 +228,7 @@ def register():
 
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
-@jwt_required()  # used as a security with token authorization
+# @jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
     response = {}
@@ -246,7 +246,7 @@ def user_profile(user_id):
 
 # route for adding products
 @app.route('/add-products', methods=["POST"])
-@jwt_required()
+# @jwt_required()
 # function to add products
 def add_products():
     add_db = UpdateProducts()  # calling the class
@@ -272,7 +272,7 @@ def add_products():
 
 # route to update your products
 @app.route('/update-products/<int:product_id>', methods=['PUT'])
-@jwt_required()
+# @jwt_required()
 # function to update products
 def update_product(product_id):
     response = {}
@@ -333,7 +333,7 @@ def view_products():
 
 # route to delete product
 @app.route('/delete-product/<int:product_id>')
-@jwt_required()
+# @jwt_required()
 # function to delete the product
 def delete_product(product_id):
     response = {}
