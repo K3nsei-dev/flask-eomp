@@ -192,11 +192,11 @@ def register():
 
     # inserting data into the users table
     if request.method == "POST":
-        first_name = request.json['first_name']
-        last_name = request.json['last_name']
-        email = request.json['email']
-        cell_num = request.json['cell_num']
-        password = request.json['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        cell_num = request.form['cell_num']
+        password = request.form['password']
 
         # connecting to the database
         with sqlite3.connect('products.db') as conn:
