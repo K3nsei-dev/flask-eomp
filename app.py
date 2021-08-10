@@ -148,7 +148,7 @@ jwt = JWT(app, authenticate, identity)
 
 
 @app.route('/protected')
-# @jwt_required()
+@jwt_required()
 def protected():
     return '%s' % current_identity
 
@@ -192,11 +192,11 @@ def register():
 
     # inserting data into the users table
     if request.method == "POST":
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        email = request.form['email']
-        cell_num = request.form['cell_num']
-        password = request.form['password']
+        first_name = request.json['first_name']
+        last_name = request.json['last_name']
+        email = request.json['email']
+        cell_num = request.json['cell_num']
+        password = request.json['password']
 
         # connecting to the database
         with sqlite3.connect('products.db') as conn:
@@ -228,7 +228,7 @@ def register():
 
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
-# @jwt_required()  # used as a security with token authorization
+@jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
     response = {}
@@ -246,18 +246,18 @@ def user_profile(user_id):
 
 # route for adding products
 @app.route('/add-products', methods=["POST"])
-# @jwt_required()
+@jwt_required()
 # function to add products
 def add_products():
     add_db = UpdateProducts()  # calling the class
     response = {}
 
     if request.method == "POST":  # inserting data into the database
-        product_name = request.form['product_name']
-        product_type = request.form['product_type']
-        product_price = request.form['product_price']
-        product_description = request.form["product_description"]
-        product_image = request.form['product_image']
+        product_name = request.json['product_name']
+        product_type = request.json['product_type']
+        product_price = request.json['product_price']
+        product_description = request.json["product_description"]
+        product_image = request.json['product_image']
 
         values = (product_name, product_type, product_price, product_description, product_image)  # values of what must go in the database
 
@@ -272,7 +272,7 @@ def add_products():
 
 # route to update your products
 @app.route('/update-products/<int:product_id>', methods=['PUT'])
-# @jwt_required()
+@jwt_required()
 # function to update products
 def update_product(product_id):
     response = {}
@@ -297,11 +297,11 @@ def update_product(product_id):
     up_db = UpdateProducts()  # calling the class
 
     if request.method == "PUT":  # inserting data into the database
-        product_name = request.form['product_name']
-        product_type = request.form['product_type']
-        product_price = request.form['product_price']
-        product_description = request.form['product_description']
-        product_image = request.form['product_image']
+        product_name = request.json['product_name']
+        product_type = request.json['product_type']
+        product_price = request.json['product_price']
+        product_description = request.json['product_description']
+        product_image = request.json['product_image']
 
         values = (product_name, product_type, product_price, product_description, product_image)  # values of what must go into the database
 
@@ -333,7 +333,7 @@ def view_products():
 
 # route to delete product
 @app.route('/delete-product/<int:product_id>')
-# @jwt_required()
+@jwt_required()
 # function to delete the product
 def delete_product(product_id):
     response = {}
