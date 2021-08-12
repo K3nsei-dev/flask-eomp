@@ -19,7 +19,8 @@ class User(object):
 
 # products class
 class Products(object):
-    def __init__(self, product_name, product_type, product_price, product_description, product_image):  # initialisation of constructor function
+    def __init__(self, product_name, product_type, product_price, product_description,
+                 product_image):  # initialisation of constructor function
         self.product_name = product_name
         self.product_type = product_type
         self.product_price = product_price
@@ -77,14 +78,15 @@ def create_users():
 
 # function to create products table
 def create_products():
-    conn = sqlite3.connect('products.db') # connecting to the database
+    conn = sqlite3.connect('products.db')  # connecting to the database
 
-    conn.execute("CREATE TABLE IF NOT EXISTS products (product_id INTEGER PRIMARY KEY AUTOINCREMENT,"  # sqlite syntax for creating a table called products
-                 "product_name TEXT NOT NULL,"
-                 "product_type TEXT NOT NULL,"
-                 "product_price INTEGER NOT NULL,"
-                 "product_description TEXT NOT NULL,"
-                 "product_image TEXT NOT NULL)")
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS products (product_id INTEGER PRIMARY KEY AUTOINCREMENT,"  # sqlite syntax for creating a table called products
+        "product_name TEXT NOT NULL,"
+        "product_type TEXT NOT NULL,"
+        "product_price INTEGER NOT NULL,"
+        "product_description TEXT NOT NULL,"
+        "product_image TEXT NOT NULL)")
     print("Products Table Created Successfully")  # printing to the console
     conn.close()  # closing the connection
 
@@ -120,7 +122,8 @@ user_id_table = {u.id: u for u in users}
 # function to authenticate login
 def authenticate(email, password):
     user = username_table.get(email, None)
-    if user and hmac.compare_digest(user.password.encode('utf-8'), password.encode('utf-8')):  # comparing the entered password and adding security
+    if user and hmac.compare_digest(user.password.encode('utf-8'),
+                                    password.encode('utf-8')):  # comparing the entered password and adding security
         return user
 
 
@@ -228,14 +231,15 @@ def register():
 
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
-@jwt_required()  # used as a security with token authorization
+# @jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
     response = {}
 
     with sqlite3.connect('products.db') as conn:  # connecting to the database
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user WHERE user_id =" + str(user_id))  # selecting all the data where the id matches
+        cursor.execute(
+            "SELECT * FROM user WHERE user_id =" + str(user_id))  # selecting all the data where the id matches
         users = cursor.fetchone()  # fetching one user from the database
 
         response['data'] = users  # displaying the users data in json format
@@ -259,7 +263,8 @@ def add_products():
         product_description = request.json["product_description"]
         product_image = request.json['product_image']
 
-        values = (product_name, product_type, product_price, product_description, product_image)  # values of what must go in the database
+        values = (product_name, product_type, product_price, product_description,
+                  product_image)  # values of what must go in the database
 
         add_db.add_product(values)
         add_db.commit()  # committing it to the database
@@ -303,7 +308,8 @@ def update_product(product_id):
         product_description = request.json['product_description']
         product_image = request.json['product_image']
 
-        values = (product_name, product_type, product_price, product_description, product_image)  # values of what must go into the database
+        values = (product_name, product_type, product_price, product_description,
+                  product_image)  # values of what must go into the database
 
         up_db.update_product(values, product_id)
 
