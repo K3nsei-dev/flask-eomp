@@ -184,7 +184,7 @@ def register():
             raise Exception("Please Fill In Each Section Correctly")
         elif len(new_num) < 10:
             raise Exception("Please Enter A 10 Digit Cell Number")
-        elif type(name) == int or surname == int:
+        elif type(name) == int or type(surname) == int:
             raise TypeError("Use Characters Only For Your Name Please")
         elif type(number) == str:
             raise TypeError("Use Digits Only For Your Cell Number Please")
@@ -256,12 +256,32 @@ def add_products():
     add_db = UpdateProducts()  # calling the class
     response = {}
 
+    # error trapping/handling
+    try:
+        name = str(request.form.get('product_name'))
+        p_type = str(request.form.get('product_type'))
+        price = int(request.form.get('product_price'))
+        new_price = request.form.get('product_price')
+        description = str(request.form.get('product_description'))
+        image = str(request.form.get('product_image'))
+
+        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0:
+            raise Exception("Please Fill In Each Section Correctly")
+        elif type(name) == int or type(p_type) == int:
+            raise TypeError("Use Characters Only For Name and Type Please")
+        elif type(price) == str:
+            raise TypeError("Use Digits Only For Price Please")
+        else:
+            pass
+    except ValueError:
+        raise TypeError("Please Use The Correct Values For Each Section")
+
     if request.method == "POST":  # inserting data into the database
-        product_name = request.form['product_name']
-        product_type = request.form['product_type']
-        product_price = request.form['product_price']
-        product_description = request.form["product_description"]
-        product_image = request.form['product_image']
+        product_name = request.json['product_name']
+        product_type = request.json['product_type']
+        product_price = request.json['product_price']
+        product_description = request.json["product_description"]
+        product_image = request.json['product_image']
 
         values = (product_name, product_type, product_price, product_description,
                   product_image)  # values of what must go in the database
