@@ -277,11 +277,11 @@ def add_products():
         raise TypeError("Please Use The Correct Values For Each Section")
 
     if request.method == "POST":  # inserting data into the database
-        product_name = request.form['product_name']
-        product_type = request.form['product_type']
-        product_price = request.form['product_price']
-        product_description = request.form["product_description"]
-        product_image = request.form['product_image']
+        product_name = request.json['product_name']
+        product_type = request.json['product_type']
+        product_price = request.json['product_price']
+        product_description = request.json["product_description"]
+        product_image = request.json['product_image']
 
         values = (product_name, product_type, product_price, product_description,
                   product_image)  # values of what must go in the database
