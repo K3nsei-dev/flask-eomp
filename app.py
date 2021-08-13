@@ -256,24 +256,23 @@ def add_products():
     add_db = UpdateProducts()  # calling the class
     response = {}
 
-    with sqlite3.connect('products.db') as conn:
-        if request.method == "POST":  # inserting data into the database
-            product_name = request.form['product_name']
-            product_type = request.form['product_type']
-            product_price = request.form['product_price']
-            product_description = request.form["product_description"]
-            product_image = request.form['product_image']
+    if request.method == "POST":  # inserting data into the database
+        product_name = request.json['product_name']
+        product_type = request.json['product_type']
+        product_price = request.json['product_price']
+        product_description = request.json["product_description"]
+        product_image = request.json['product_image']
 
-            values = (product_name, product_type, product_price, product_description,
-                      product_image)  # values of what must go in the database
+        values = (product_name, product_type, product_price, product_description,
+                  product_image)  # values of what must go in the database
 
-            add_db.add_product(values)
-            add_db.commit()  # committing it to the database
+        add_db.add_product(values)
+        add_db.commit()  # committing it to the database
 
-            response['status_code'] = 200
-            response['message'] = "Product Added Successfully"
+        response['status_code'] = 200
+        response['message'] = "Product Added Successfully"
 
-    return response
+        return response
 
 
 # route to update your products
