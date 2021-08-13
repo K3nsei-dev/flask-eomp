@@ -260,7 +260,7 @@ def add_products():
     try:
         name = str(request.form.get('product_name'))
         p_type = str(request.form.get('product_type'))
-        price = int(request.form.get('product_price'))
+        price = str(request.form.get('product_price'))
         new_price = request.form.get('product_price')
         description = str(request.form.get('product_description'))
         image = str(request.form.get('product_image'))
@@ -269,7 +269,7 @@ def add_products():
             raise Exception("Please Fill In Each Section Correctly")
         elif type(name) == int or type(p_type) == int:
             raise TypeError("Use Characters Only For Name and Type Please")
-        elif type(price) == str:
+        elif type(price) == int:
             raise TypeError("Use Digits Only For Price Please")
         else:
             pass
