@@ -258,14 +258,14 @@ def add_products():
 
     # error trapping/handling
     try:
-        name = str(request.form.get('product_name'))
-        p_type = str(request.form.get('product_type'))
-        price = str(request.form.get('product_price'))
-        new_price = request.form.get('product_price')
-        description = str(request.form.get('product_description'))
-        image = str(request.form.get('product_image'))
+        name = str(request.form['product_name'])
+        p_type = str(request.form['product_type'])
+        price = str(request.form['product_price'])
+        new_price = request.form['product_price']
+        description = str(request.form['product_description'])
+        image = str(request.form['product_image'])
 
-        if len(name) == "" or len(p_type) == "" or len(new_price) == 0 or len(description) == "" or len(image) == "":
+        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0:
             raise Exception("Please Fill In Each Section Correctly")
         elif type(name) == int or type(p_type) == int:
             raise TypeError("Use Characters Only For Name and Type Please")
