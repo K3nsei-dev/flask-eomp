@@ -265,7 +265,7 @@ def add_products():
         description = str(request.form.get('product_description'))
         image = str(request.form.get('product_image'))
 
-        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0:
+        if len(name) == "" or len(p_type) == "" or len(new_price) == 0 or len(description) == "" or len(image) == "":
             raise Exception("Please Fill In Each Section Correctly")
         elif type(name) == int or type(p_type) == int:
             raise TypeError("Use Characters Only For Name and Type Please")
