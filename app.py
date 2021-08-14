@@ -3,7 +3,7 @@ import sqlite3
 import hmac
 from flask import Flask, request
 from flask_jwt import JWT, jwt_required, current_identity
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from flask_mail import Mail, Message
 import re
 from datetime import *
@@ -158,6 +158,7 @@ def protected():
 
 # route that lets someone register themselves
 @app.route('/register', methods=['POST'])
+@cross_origin()
 def register():
     response = {}  # an empty dictionary
 
@@ -231,6 +232,7 @@ def register():
 
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
+@cross_origin()
 # @jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
@@ -250,6 +252,7 @@ def user_profile(user_id):
 
 # route for adding products
 @app.route('/add-products', methods=["POST"])
+@cross_origin()
 # @jwt_required()
 # function to add products
 def add_products():
@@ -297,6 +300,7 @@ def add_products():
 
 # route to update your products
 @app.route('/update-products/<int:product_id>', methods=['PUT'])
+@cross_origin()
 # @jwt_required()
 # function to update products
 def update_product(product_id):
@@ -343,6 +347,7 @@ def update_product(product_id):
 
 # route to view the products
 @app.route('/view-products')
+@cross_origin()
 # function to view products
 def view_products():
     response = {}
@@ -359,6 +364,7 @@ def view_products():
 
 # route to delete product
 @app.route('/delete-product/<int:product_id>')
+@cross_origin()
 # @jwt_required()
 # function to delete the product
 def delete_product(product_id):
