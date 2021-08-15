@@ -7,6 +7,8 @@ from flask_cors import CORS
 from flask_mail import Mail, Message
 import re
 from datetime import *
+import cloudinary
+import cloudinary.uploader
 
 
 # user class
@@ -263,7 +265,7 @@ def add_products():
     try:
         name = str(request.form['product_name'])
         p_type = str(request.form['product_type'])
-        price = str(request.form['product_price'])
+        price = int(request.form['product_price'])
         new_price = request.form['product_price']
         description = str(request.form['product_description'])
         image = str(request.form['product_image'])
@@ -272,7 +274,7 @@ def add_products():
             raise Exception("Please Fill In Each Section Correctly")
         elif type(name) == int or type(p_type) == int:
             raise TypeError("Use Characters Only For Name and Type Please")
-        elif type(price) == int:
+        elif type(price) == str:
             raise TypeError("Use Digits Only For Price Please")
         else:
             pass
