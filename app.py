@@ -307,12 +307,12 @@ def update_product(product_id):
     response = {}
 
     try:  # error trapping/handling
-        name = str(request.form['product_name'])
-        p_type = str(request.form['product_type'])
-        price = int(request.form['product_price'])
-        description = str(request.form['product_description'])
-        image = str(request.form['product_image'])
-        new_price = request.form['product_price']
+        name = str(request.json['product_name'])
+        p_type = str(request.json['product_type'])
+        price = int(request.json['product_price'])
+        description = str(request.json['product_description'])
+        image = str(request.json['product_image'])
+        new_price = request.json['product_price']
 
         if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0:
             raise Exception("Please Fill in Each Section Correctly")
