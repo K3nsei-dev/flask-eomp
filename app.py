@@ -162,7 +162,7 @@ def protected():
 def register():
     response = {}  # an empty dictionary
 
-    regex_email = request.form.get('email')  # getting the email from the form
+    regex_email = request.json['email']  # getting the email from the form
 
     regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'  # regular expression for validating email
 
@@ -174,12 +174,12 @@ def register():
 
     # error trapping/handling
     try:
-        name = str(request.form.get('first_name'))
-        surname = str(request.form.get('last_name'))
-        number = int(request.form.get('cell_num'))
-        new_num = request.form.get('cell_num')
-        e_add = request.form.get('email')
-        passwd = request.form.get('password')
+        name = str(request.json['first_name'])
+        surname = str(request.json['last_name'])
+        number = int(request.json['cell_num'])
+        new_num = request.json['cell_num']
+        e_add = request.json['email']
+        passwd = request.json['password']
 
         if len(name) == 0 or len(surname) == 0 or len(new_num) == 0 or len(e_add) == 0 or len(passwd) == 0:
             raise Exception("Please Fill In Each Section Correctly")
@@ -196,11 +196,11 @@ def register():
 
     # inserting data into the users table
     if request.method == "POST":
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        email = request.form['email']
-        cell_num = request.form['cell_num']
-        password = request.form['password']
+        first_name = request.json['first_name']
+        last_name = request.json['last_name']
+        email = request.json['email']
+        cell_num = request.json['cell_num']
+        password = request.json['password']
 
         # connecting to the database
         with sqlite3.connect('products.db') as conn:
