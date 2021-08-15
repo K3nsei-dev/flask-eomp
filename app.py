@@ -7,8 +7,6 @@ from flask_cors import CORS
 from flask_mail import Mail, Message
 import re
 from datetime import *
-import cloudinary
-import cloudinary.uploader
 
 
 # user class
