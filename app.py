@@ -363,7 +363,7 @@ def view_products():
 
 
 # route to delete product
-@app.route('/delete-product/<int:product_id>')
+@app.route('/delete-product/<int:product_id>', methods=["POST"])
 @cross_origin()
 # @jwt_required()
 # function to delete the product
