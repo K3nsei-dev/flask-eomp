@@ -307,19 +307,22 @@ def update_product(product_id):
     response = {}
 
     try:  # error trapping/handling
-        id = str(request.json['product_id'])
+        id = int(request.json['product_id'])
         name = str(request.json['product_name'])
         p_type = str(request.json['product_type'])
         price = int(request.json['product_price'])
         description = str(request.json['product_description'])
         image = str(request.json['product_image'])
         new_price = request.json['product_price']
+        new_id = request.json['product_id']
 
-        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0 or len(id):
+        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0 or len(
+                new_id):
             raise Exception("Please Fill in Each Section Correctly")
-        elif type(price) == str or type(id) == str:
+        elif type(price) == str:
             raise KeyError("Please Use Digits for Price")
-        elif type(name) == int or type(p_type) == int or type(description) == int or type(image) == int:
+        elif type(name) == int or type(p_type) == int or type(description) == int or type(image) == int or type(
+                id) == int:
             raise KeyError("Please Use Characters For Name, Type, Description, and Image")
     except ValueError:
         raise ValueError("Incorrect Value Used For Sections")
