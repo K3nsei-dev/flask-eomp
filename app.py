@@ -307,6 +307,7 @@ def update_product(product_id):
     response = {}
 
     try:  # error trapping/handling
+        id = str(request.json['product_id'])
         name = str(request.json['product_name'])
         p_type = str(request.json['product_type'])
         price = int(request.json['product_price'])
@@ -314,9 +315,9 @@ def update_product(product_id):
         image = str(request.json['product_image'])
         new_price = request.json['product_price']
 
-        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0:
+        if len(name) == 0 or len(p_type) == 0 or len(new_price) == 0 or len(description) == 0 or len(image) == 0 or len(id):
             raise Exception("Please Fill in Each Section Correctly")
-        elif type(price) == str:
+        elif type(price) == str or type(id) == str:
             raise KeyError("Please Use Digits for Price")
         elif type(name) == int or type(p_type) == int or type(description) == int or type(image) == int:
             raise KeyError("Please Use Characters For Name, Type, Description, and Image")
