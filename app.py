@@ -230,6 +230,21 @@ def register():
         return response  # returning the response and if it is successful it will display the above code
 
 
+@app.route('/user-data/<email>')
+def get_data(email):
+    response = {}
+
+    with sqlite3.connect('products.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM user WHERE email = ?", (email,))
+        users = cursor.fetchone()
+
+        response['data'] = users
+        response['status_code'] = 200
+        response['message'] = "Successfully retrieved User ID"
+    return response
+
+
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
 # @cross_origin()
