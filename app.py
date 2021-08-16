@@ -212,7 +212,7 @@ def register():
                            "password) VALUES (?, ?, ?, ?, ?)", (first_name, last_name, email, cell_num, password))
             # pushing the data to the database
             conn.commit()
-            fetch_users()
+            # fetch_users()
 
             # initialising flask mail
             mail = Mail(app)
