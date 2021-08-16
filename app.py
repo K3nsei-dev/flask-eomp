@@ -231,6 +231,7 @@ def register():
         return response  # returning the response and if it is successful it will display the above code
 
 
+# get user ID
 @app.route('/user-data/<email>')
 def get_data(email):
     response = {}
@@ -263,6 +264,48 @@ def user_profile(user_id):
         response['data'] = users  # displaying the users data in json format
         response['status_code'] = 200
         response['message'] = "Successfully Viewed Profile"
+    return response
+
+
+# function to edit user profile
+@app.route('/edit-user/<int:user_id>', methods=['PUT'])
+def edit_user(user_id):
+    response = {}
+
+    if request.method == "PUT":
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        cell_num = request.form['cell_num']
+        password = request.form['password']
+
+        with sqlite3.connect('products.db') as conn:
+            cursor = conn.cursor()
+
+            cursor.execute(
+                "UPDATE user SET first_name=?, last_name=?, email=?, cell_num=?, password=? WHERE user_id =" + str(
+                    user_id), (first_name, last_name, email, cell_num, password))
+
+            conn.commit()
+
+            response['message'] = "Details Updated Successfully"
+            response['status_code'] = 200
+        return response
+
+
+# function to delete user profile
+@app.route('/delete-user/<int:user_id>', methods=["POST"])
+def delete_user(user_id):
+    response = {}
+
+    with sqlite3.connect('products.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM user WHERE user_id=" + str(user_id))
+        conn.commit()
+
+        response['message'] = 'You successfully deleted the user'
+        response['status_code'] = 200
+
     return response
 
 
