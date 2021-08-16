@@ -250,7 +250,7 @@ def get_data(email):
 # route for individual to check their profile
 @app.route('/user-profile/<int:user_id>')
 # @cross_origin()
-# @jwt_required()  # used as a security with token authorization
+@jwt_required()  # used as a security with token authorization
 # function to retrieve someones profile
 def user_profile(user_id):
     response = {}
