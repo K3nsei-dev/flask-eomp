@@ -212,15 +212,23 @@ def register():
                            "password) VALUES (?, ?, ?, ?, ?)", (first_name, last_name, email, cell_num, password))
             # pushing the data to the database
             conn.commit()
-            # fetch_users()
+
+            global users
+
+            users = cursor.fetchall()
 
             # initialising flask mail
             mail = Mail(app)
 
             # content of the email
             msg = Message("User Registration Details", sender='lca.pointofsale@gmail.com', recipients=[email])
-            msg.body = "Thank You For Registering With Life Choices Point Of Sales!" + "\n" + "\n" + "Your Details Are As Follows:" + "\n" + "\n" + "Username:" + " " + \
-                       email + "\n" + "Password:" + " " + password + "\n" + "\n" + "Thank You For Choosing Life Choices Point Of Sale! Please Enjoy The Experience!"
+            msg.body = "Thank You For Registering With Life Choices Point Of Sales!" + "\n" + "\n" + "Your Details " \
+                                                                                                     "Are As " \
+                                                                                                     "Follows:" + \
+                       "\n" + "\n" + "Username:" + " " + \
+                       email + "\n" + "Password:" + " " + password + "\n" + "\n" + "Thank You For Choosing Life " \
+                                                                                   "Choices Point Of Sale! Please " \
+                                                                                   "Enjoy The Experience! "
 
             # sending the email
             mail.send(msg)
